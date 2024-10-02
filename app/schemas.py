@@ -33,4 +33,5 @@ class WindowModel(BaseModel):
 
 class DialogModel(BaseModel):
     name: str
+    trigger: str
     windows: list[WindowModel]

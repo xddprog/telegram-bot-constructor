@@ -55,10 +55,10 @@ class WindowConstructor:
         )
 
     def _generate_buttons_row(self, row: RowButtonsModel) -> Row:
-        return Row([self._generate_button(button) for button in row.buttons])
+        return Row(*[self._generate_button(button) for button in row.buttons])
 
     def _generate_buttons_column(self, column: ColumnButtonsModel) -> Column:
-        return Column([self._generate_button(row) for row in column.buttons])
+        return Column(*[self._generate_button(row) for row in column.buttons])
 
     def _generate_keyboard(self, keyboard: KeyboardModel) -> Column:
         rows_and_columns = []
@@ -68,7 +68,7 @@ class WindowConstructor:
                 rows_and_columns.append(self._generate_buttons_column(item))
             else:
                 rows_and_columns.append(self._generate_buttons_row(item))
-
+        print(rows_and_columns)
         return Column(*rows_and_columns)
 
     def _generate_media(self) -> DynamicMedia | StaticMedia:

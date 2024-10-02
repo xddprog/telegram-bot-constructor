@@ -1,3 +1,5 @@
+import asyncio
+from re import A
 from typing import Annotated
 from fastapi import Depends, FastAPI
 
@@ -14,7 +16,7 @@ async def generate(
     dialogs: list[DialogModel],
     constructor: Annotated[BotConstructor, Depends(get_bot_constructor)],
 ) -> None:
-    print(constructor())
+    await constructor()
     return True
 
 

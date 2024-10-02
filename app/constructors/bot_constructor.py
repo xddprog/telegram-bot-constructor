@@ -1,6 +1,10 @@
 import logging
-from aiogram import Dispatcher
-from aiogram_dialog import setup_dialogs
+from mailbox import Message
+from aiogram import Bot, Dispatcher
+from aiogram.client.default import DefaultBotProperties
+from aiogram.enums import ParseMode
+from aiogram.filters import Command
+from aiogram_dialog import Dialog, setup_dialogs
 
 from constructors.dialog_constructor import DialogConstructor
 from schemas import DialogModel
@@ -12,14 +16,18 @@ class BotConstructor:
         config: dict,
         dialogs: list[DialogModel],
     ) -> None:
-        # self.__bot = Bot(
-        #     **config, default=DefaultBotProperties(parse_mode=ParseMode.HTML)
-        # )
-        self._dialogs = self._generate_dialogs(dialogs)
+        self.__bot = Bot(
+            **config, default=DefaultBotProperties(parse_mode=ParseMode.HTML)
+        )
+        self.__dialogs = self._generate_dialogs(dialogs)
         self.__dispatcher = Dispatcher()
 
-    def _generate_dialogs(self, dialogs: list[DialogModel]) -> None:
-        return [DialogConstructor(dialog)() for dialog in dialogs]
+    def _generate_dialogs(self, dialogs: list[DialogModel]) -> list[DialogConstructor]:
+        return [DialogConstructor(dialog) for dialog in dialogs]
+    
+    @staticmethod
+    async def test_handler(message: Message) -> None:
+        await message.answer("test")
 
     async def __call__(self) -> None:
         logging.basicConfig(
@@ -29,4 +37,8 @@ class BotConstructor:
         )
         setup_dialogs(self.__dispatcher)
 
-        # await self.__dispatcher.start_polling(self.__bot)
+        for dialog in self.__dialogs:
+            self.__dispatcher.message.register(dialog._trigger,)
+            self.__dispatcher.include_router(dialog())
+
+        await self.__dispatcher.start_polling(self.__bot)
